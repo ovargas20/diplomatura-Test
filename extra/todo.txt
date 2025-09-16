@@ -1,0 +1,20 @@
+crear repo and clonar
+
+project overview 
+
+pnpm install 
+pnpm run dev 
+rest client
+
+first commit
+
+do a change 
+commit it 
+
+add codeql to main
+
+create new branch and show success codeql
+
+create new branch and show error codeql
+
+gh actions pannel
