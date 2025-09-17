@@ -42,3 +42,5 @@ All endpoints are available at `http://localhost:3000`
 ## Database
 
 The application uses SQLite with a database file located at `/db/diplotesting.db`. The database and tables are created automatically when the application starts.
+
+Esto es una prueba 
