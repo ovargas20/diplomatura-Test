@@ -2,6 +2,16 @@ import { Router, Request, Response } from 'express';
 import db from '../libs/db';
 import { User } from '../types';
 import { deleteUserLimiter } from '../middleware';
+import path from 'path';
+import fs from 'fs';
+
+/**
+ * Vulnerabilidades de codigo - prueba
+ */
+// Hardcoded secrets - CodeQL detectará esto como una vulnerabilidad
+const API_KEY = 'sk_test_51HV4nEJIbSIx3vIhjh8zsGnVW7MBDy';
+const DB_PASSWORD = 'super_secret_password123!';
+const JWT_SECRET = 'my_very_secret_key_for_jwt_tokens';
 
 const router = Router();
 
@@ -162,5 +172,61 @@ router.delete('/:id', deleteUserLimiter, (req: Request, res: Response) => {
     });
   }
 });
+
+/** Mas vulnerabilidad de codigo - prueba
+ * GET /users/search - Search users by name or email
+ * Vulnerable to SQL Injection
+ */
+router.get('/search', (req: Request, res: Response) => {
+  try {
+    const searchTerm = req.query.q;
+
+    // VULNERABLE: SQL Injection - concatenación directa de parámetros
+    const query = `SELECT * FROM users WHERE name LIKE '%${searchTerm}%' OR email LIKE '%${searchTerm}%'`;
+    const users = db.prepare(query).all();
+
+    res.json(users);
+  } catch (error) {
+    console.error('Error searching users:', error);
+    res.status(500).json({ error: 'Failed to search users' });
+  }
+});
+
+/**
+ * POST /users/check-system - Verifica si un usuario existe en el sistema operativo
+ * Vulnerable a Command Injection
+ */
+router.post('/check-system', (req: Request, res: Response) => {
+  const { username } = req.body;
+
+  // VULNERABLE: Command Injection - usando entrada de usuario directamente en exec
+  exec(
+    `whoami && echo Checking if ${username} exists`,
+    (error, stdout, stderr) => {
+      if (error) {
+        return res.status(500).json({ error: stderr });
+      }
+      res.json({ result: stdout });
+    },
+  );
+});
+
+
+/**
+ * POST /users/eval - Evalúa una expresión JavaScript
+ * Vulnerable a uso inseguro de eval
+ */
+router.post('/eval', (req: Request, res: Response) => {
+  const { code } = req.body;
+
+  try {
+    // VULNERABLE: Uso inseguro de eval - evaluación dinámica de código
+    const result = eval(code);
+    res.json({ result });
+  } catch (error) {
+    res.status(400).json({ error: 'Invalid code' });
+  }
+});
+
 
 export default router;
