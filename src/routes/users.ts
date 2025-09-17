@@ -11,6 +11,7 @@ const router = Router();
 router.get('/', (req: Request, res: Response) => {
   try {
     const users = db.prepare('SELECT * FROM users').all();
+    console.log('users'); //imprime por pantalla 
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
