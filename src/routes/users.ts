@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import db from '../libs/db';
 import { User } from '../types';
 import { deleteUserLimiter } from '../middleware';
+import path from 'path';
+
 
 const router = Router();
 
